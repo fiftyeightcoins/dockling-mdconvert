@@ -1,3 +1,6 @@
+https://claude.ai/chat/38db2b26-3102-4c80-9364-a2b22d319cf3
+
+
 # docling-spring
 
 A Spring Boot service that converts documents (PDF, DOCX, PPTX, HTML, images, etc.)

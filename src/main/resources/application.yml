@@ -1,0 +1,19 @@
+server:
+  port: 8080
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+
+docling:
+  # Path to the docling executable/CLI. Assumes `pip install docling` has been run
+  # and `docling` is on the PATH. Override with an absolute path if needed.
+  executable: docling
+  # Directory where uploaded source files are staged
+  upload-dir: ./data/uploads
+  # Directory where converted markdown output is written
+  output-dir: ./data/output
+  # Max seconds to let a single conversion run before it's killed
+  timeout-seconds: 300

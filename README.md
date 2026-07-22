@@ -1,4 +1,4 @@
-# GraphRAG on Neo4j (Gemini or local BGE embeddings)
+# GraphRAG on Neo4j (local BGE embeddings)
 
 A minimal but complete GraphRAG stack over your Neo4j web instance:
 

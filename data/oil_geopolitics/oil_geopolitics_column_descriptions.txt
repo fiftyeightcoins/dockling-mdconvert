@@ -1,0 +1,248 @@
+COLUMN DESCRIPTIONS — Oil & Geopolitical Risk Premium Dataset
+=============================================================
+9K Daily Observations · Brent/WTI/Dubai · Iran Sanctions · Strait of Hormuz · GPR Index · 1990–2025
+Author: Sergey Nefedov (sergionefedov)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FILE 1: oil_prices_daily.csv  (9,214 rows — daily, Jan 1990 – Apr 2025)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+date                    Trading date (YYYY-MM-DD), weekdays only
+
+── Crude Oil Benchmarks ─────────────────────────────────────────────────────
+brent_usd               Brent crude spot price (USD per barrel)
+                        North Sea blend; global pricing benchmark for ~2/3 of world oil
+                        Historical range: $11.55 (Dec 1998) → $147 (Jul 2008)
+                        Calibrated to: EIA European Brent Spot Price
+
+wti_usd                 West Texas Intermediate spot price (USD per barrel)
+                        US domestic benchmark; priced at Cushing, Oklahoma hub
+                        Typically trades at $1–4 discount to Brent (quality premium)
+                        Exception: 2011–2013 WTI traded at $15–20 DISCOUNT due
+                        to US shale glut and lack of export infrastructure
+
+dubai_usd               Dubai/Oman crude spot price (USD per barrel)
+                        Sour crude benchmark for Middle East → Asia flows
+                        Relevant for: pricing Iran, Saudi, UAE exports to China/India
+                        Typically $0.50–$3.00 below Brent (sour crude discount)
+
+brent_wti_spread        Brent minus WTI (USD per barrel)
+                        Positive = Brent premium (normal)
+                        Negative = WTI premium (rare; US shale glut 2011–2013)
+                        Useful as geopolitical stress indicator:
+                        Brent spikes more than WTI during Middle East events
+
+── Volatility & Risk ────────────────────────────────────────────────────────
+brent_daily_return_pct  Daily log return of Brent price (%)
+                        Computed as: ln(Pt / Pt-1) × 100
+                        Normal range: ±2%; crisis days: ±10–15%
+
+brent_30d_vol           30-day rolling standard deviation of daily returns
+                        Annualized volatility proxy (multiply by √252 for annual)
+                        Low vol regime: ~15%; crisis regime: ~60–80%
+
+hormuz_risk_premium_pct Estimated Strait of Hormuz risk premium (% of Brent price)
+                        0–2%: Normal; 2–5%: Elevated tension; 5–8%: High risk
+                        Calibrated to documented premium during:
+                          2012 Iran closure threat: ~4–6%
+                          2019 tanker attacks: ~3–5%
+                          2024–2025 Houthi/Iran escalation: ~4–8%
+
+── Event Flags ──────────────────────────────────────────────────────────────
+is_geopolitical_event   Binary: 1 if a major geopolitical event occurred on this date
+                        Links to geopolitical_events.csv for event details
+                        68 event dates across 35 years
+
+event_type              Type of event (null if no event):
+                          military     — Armed conflict, strike, invasion
+                          sanctions    — New sanctions imposed or lifted
+                          diplomatic   — Agreement, talks, deal
+                          market       — OPEC decision, production change
+                          political    — Election, regime change, policy shift
+                          economic     — Financial crisis, recession
+                          terror       — Terrorist attack
+
+event_description       Brief description of the event (null if no event)
+
+── Supply Indicators ────────────────────────────────────────────────────────
+opec_production_mbd     OPEC total crude oil production (million barrels per day)
+                        Historical range: ~24–35 mbd
+                        Calibrated to: IEA/EIA OPEC production estimates
+
+us_rig_count            US active oil drilling rig count (Baker Hughes style)
+                        Leading indicator for US production 3–6 months ahead
+                        Peak: ~1,900 (2014) | COVID trough: ~200 (2020)
+                        Recovery: ~700 (2022–2024)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FILE 2: geopolitical_events.csv  (68 rows — key events 1990–2025)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+date                    Event date (YYYY-MM-DD)
+event_name              Full event name/description
+event_type              military / sanctions / diplomatic / market / political / economic / terror
+region                  Middle East / Global
+iran_involved           Binary: 1 if Iran is a direct participant in the event
+price_shock_pct         Estimated immediate Brent price shock (%, positive = up)
+                        Based on documented price change in days following event
+                        NOT a precise causal estimate; use as approximate signal
+shock_direction         up / down / neutral
+duration_days           Estimated market impact duration (days)
+severity                extreme / high / medium / low
+strait_of_hormuz_risk   Binary: 1 if event threatens Strait of Hormuz shipping
+sanctions_related       Binary: 1 if event is sanctions-driven
+military_action         Binary: 1 if event involves military force
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FILE 3: iran_oil_exports.csv  (360 rows — annual by destination, 1990–2025)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+year                    Calendar year (1990–2025)
+destination             Export destination country/region:
+                          China, India, Japan, South Korea, Italy, Turkey,
+                          Greece, Spain, Syria, Other
+exports_mbd             Iran crude oil exports to this destination (million barrels/day)
+total_iran_exports_mbd  Iran total crude exports across all destinations (mbd)
+                        Historical range:
+                          Peak: ~2.6 mbd (pre-sanctions, 2005–2011)
+                          Trough: ~0.7 mbd (maximum pressure, 2019–2021)
+share_pct               This destination's share of total Iran exports (%)
+sanctions_status        Sanctions regime in effect:
+                          none     — Minimal US sanctions (pre-2012)
+                          moderate — Partial restrictions
+                          heavy    — Full EU+US+UN embargo (2012–2015, 2019–2022)
+is_sanctions_year       Binary: 1 if heavy sanctions were in effect this year
+estimated_revenue_bn_usd Approximate annual oil revenue (billion USD)
+                        Computed as: exports × 365 × avg_price × 0.8 (discount)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FILE 4: sanctions_timeline.csv  (25 rows — sanction events 1979–2025)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+date                    Date sanction was enacted or announced (YYYY-MM-DD)
+imposing_authority      US / EU / UN / US/EU / US/EU/UN
+sanction_type           executive_order / trade / secondary / multilateral / financial / energy / arms / political
+category                Specific sanction category:
+                          trade_ban / oil_embargo / oil_sanctions / financial /
+                          asset_freeze / comprehensive / nuclear_sanctions /
+                          secondary_sanctions / maximum_pressure /
+                          comprehensive_relief / sanctions_lifted / partial_relief
+description             Plain-language description of the sanction
+estimated_gdp_impact_pct Estimated impact on Iran GDP (%, negative = relief)
+                         Positive = sanctions pressure on economy
+                         Negative = sanctions relief (JCPOA-related entries)
+oil_sector_affected     Binary: 1 if sanction targets oil/energy sector
+financial_sector_affected Binary: 1 if sanction targets banking/financial sector
+is_relief               Binary: 1 if this is a sanctions relief (not tightening)
+cumulative_pressure_score Running sum of GDP impact — shows cumulative sanctions burden
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FILE 5: risk_indicators.csv  (424 rows — monthly, Jan 1990 – Apr 2025)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+date                    First day of month (YYYY-MM-DD)
+year / month            Calendar year and month
+
+── Geopolitical Risk ────────────────────────────────────────────────────────
+geopolitical_risk_index Composite geopolitical risk index (GPR)
+                        Calibrated to: Caldara & Iacoviello (2022) GPR Index
+                        Baseline ~100; spikes during crises:
+                          9/11 (2001):     ~400
+                          Iraq War (2003): ~320
+                          Ukraine (2022):  ~380
+                          Iran escalation (2025): ~260
+
+iran_specific_risk_bp   Iran-specific geopolitical risk premium (basis points)
+                        Added to Brent price as estimated Iran risk component
+                        Low: 50–150 bps (normal periods)
+                        High: 200–500 bps (heavy sanctions / conflict)
+                        1 basis point = 0.01% of price
+
+── Financial Stress ─────────────────────────────────────────────────────────
+vix_index               CBOE Volatility Index (VIX) — implied S&P 500 volatility
+                        "Fear gauge" for global risk appetite
+                        Low: <15 (calm); High: >30 (stress); Crisis: >50
+                        Peak: ~80 (March 2020 COVID)
+
+usd_index_dxy           US Dollar Index (DXY) — USD vs basket of 6 currencies
+                        Strong USD (high DXY) → lower oil prices in USD terms
+                        Inverse correlation with oil well documented
+
+gold_usd_oz             Gold spot price (USD per troy oz)
+                        Safe-haven asset; rises with geopolitical risk
+                        Range: $380 (1990) → $2,750 (2024)
+
+── Supply/Demand Balance ────────────────────────────────────────────────────
+opec_spare_capacity_mbd OPEC spare production capacity (million barrels/day)
+                        Key supply buffer: low spare capacity → high prices
+                        Normal: 2–4 mbd; Crisis: <1 mbd; Glut: >5 mbd
+
+── Derived Risk Metrics ─────────────────────────────────────────────────────
+straits_closure_prob_pct Estimated probability of Strait of Hormuz disruption (%)
+                         0–5%: Normal; 5–15%: Elevated; 15–30%: High tension
+                         ~20% of world oil passes through Strait of Hormuz
+
+brent_risk_premium_usd  Estimated geopolitical risk premium embedded in Brent price (USD/bbl)
+                         = portion of price attributable to geopolitical factors
+                         vs. pure supply/demand fundamentals
+                         Normal: $2–5; Crisis: $10–25
+
+energy_security_index   Composite energy security score (0–100)
+                         Higher = more secure; lower = more vulnerable
+                         Incorporates: GPR, VIX, spare capacity, USD strength
+                         Useful as single summary variable for geopolitical risk
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+KEY CALIBRATION SOURCES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+EIA (US Energy Information Administration)
+  → Brent/WTI/Dubai daily spot prices: eia.gov/petroleum/data
+  → OPEC production data, US rig count history
+
+IEA (International Energy Agency)
+  → Oil Market Reports — OPEC spare capacity estimates
+  → Iran export data by destination country
+
+Caldara & Iacoviello (2022)
+  "Measuring Geopolitical Risk", American Economic Review
+  → GPR Index methodology and historical series
+  → Available: matteoiacoviello.com/gpr.htm
+
+OFAC (US Treasury Office of Foreign Assets Control)
+  → Iran sanctions timeline: dates, categories, scope
+
+IMF World Economic Outlook
+  → Iran GDP impact estimates for sanctions periods
+
+BP Statistical Review of World Energy 2023
+  → Historical oil price series, production by country
+  → Strait of Hormuz volume estimates (~20% of global oil)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+IMPORTANT NOTES FOR ANALYSIS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+LOG SCALE: Brent price spans $11–$147 over 35 years.
+  For time series visualization, consider log scale or returns.
+  brent_daily_return_pct is already in return space.
+
+EVENT STUDY: price_shock_pct in geopolitical_events.csv is
+  approximate. For rigorous event study, compute:
+    CAR(t) = Σ [R(t+i) - E[R(t+i)]] for i in [-5, +30]
+  using brent_daily_return_pct from oil_prices_daily.csv.
+
+NEGATIVE PRICES: WTI went negative on April 20, 2020 (storage crisis).
+  This is in the daily data. Be careful with log transforms —
+  use brent_usd (never went negative) for log-return calculations.
+
+JOIN KEYS:
+  oil_prices_daily.csv ↔ geopolitical_events.csv  →  on 'date'
+  oil_prices_daily.csv ↔ risk_indicators.csv       →  on year+month
+  iran_oil_exports.csv ↔ sanctions_timeline.csv    →  on year

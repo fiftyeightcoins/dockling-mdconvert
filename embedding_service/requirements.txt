@@ -1,0 +1,9 @@
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+# torch is intentionally NOT listed here — the Dockerfile installs a
+# CPU-only wheel from the PyTorch index first. If torch is also listed
+# here, this second `pip install -r requirements.txt` step reinstalls the
+# full CUDA build from PyPI, which bloats/breaks the build and can conflict
+# with the CPU wheel already installed.
+sentence-transformers==3.1.1
+pydantic==2.9.2

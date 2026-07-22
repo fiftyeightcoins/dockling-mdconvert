@@ -1,0 +1,42 @@
+services:
+  bge-embedding-service:
+    build:
+      context: ./embedding_service
+      args:
+        MODEL_NAME: BAAI/bge-base-en-v1.5
+    image: local-bge-embedding-service:latest
+    container_name: bge-embedding-service
+    ports:
+      - "8000:8000"
+    environment:
+      - MODEL_NAME=BAAI/bge-base-en-v1.5
+      - DEVICE=cpu
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  webapp:
+    build:
+      context: .
+      dockerfile: webapp/backend/Dockerfile
+    image: graphrag-webapp:latest
+    container_name: graphrag-webapp
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./:/app/project          # mount the whole project so it can run ingest.py / rag.py / rag_csv.py
+      - ./webapp/data:/app/project/webapp/data
+    working_dir: /app/project
+    env_file:
+      - .env
+    environment:
+      - PROJECT_ROOT=/app/project
+      - PYTHON_BIN=python
+    command: uvicorn webapp.backend.main:app --host 0.0.0.0 --port 8080
+    depends_on:
+      - bge-embedding-service
+    restart: unless-stopped

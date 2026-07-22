@@ -1,0 +1,13 @@
+neo4j>=5.20
+google-genai>=0.3.0
+numpy>=1.26
+python-dotenv>=1.0
+tqdm>=4.66
+requests>=2.31
+
+# Only needed if EMBEDDING_PROVIDER=local (in-process BGE).
+# If you use EMBEDDING_PROVIDER=local_docker instead (recommended to avoid
+# version conflicts), these are NOT required in this environment — the
+# model runs isolated inside embedding_service/ via Docker instead.
+# sentence-transformers>=3.0.0
+# torch>=2.2.0
